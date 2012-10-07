@@ -1,0 +1,52 @@
+<project name="phpcs" default="build">
+	<target name="build" depends="prepare, lint, phpunit, phpcpd, phpmd, phpcb" description="Meta target, spouští ostatní targety"/>
+
+	<fileset id="allPhpFiles" dir="${project.basedir}/">
+		<include name="**/*.php"/>
+	</fileset>
+
+	<fileset id="tests" dir="${project.basedir}/tests">
+		<include name="Collabim/**/*Test.php"/>
+	</fileset>
+
+	<target name="cleanup" description="Workspace cleanup">
+		<delete dir="${project.basedir}/build"/>
+	</target>
+
+	<target name="prepare" depends="cleanup" description="Workspace preparation">
+		<mkdir dir="${project.basedir}/build"/>
+	</target>
+
+	<target name="lint" description="PHP Lint check">
+		<phplint haltonfailure="true" level="info">
+			<fileset refid="allPhpFiles"/>
+		</phplint>
+	</target>
+
+	<target name="phpunit" depends="prepare" description="PHPUnit tests">
+		<phpunit printsummary="true" haltonfailure="true" haltonerror="true" bootstrap="${project.basedir}/tests/bootstrap.php">
+			<formatter todir="${project.basedir}/build" outfile="phpunit-report.xml" type="xml"/>
+			<batchtest>
+				<fileset refid="tests" />
+			</batchtest>
+		</phpunit>
+	</target>
+
+	<target name="phpcpd" depends="prepare" description="PHP copy paste detector">
+		<phpcpd>
+			<fileset refid="allPhpFiles"/>
+			<formatter type="pmd" outfile="${project.basedir}/build/pmd-cpd.xml"/>
+		</phpcpd>
+	</target>
+
+	<target name="phpmd" depends="prepare" description="PHP Mass Detector">
+		<phpmd rulesets="${project.basedir}/phpmd.xml">
+			<fileset refid="allPhpFiles"/>
+			<formatter type="xml" outfile="${project.basedir}/build/pmd.xml"/>
+		</phpmd>
+	</target>
+
+	<target name="phpcb" depends="phpcpd, phpmd" description="Generates PHP_CodeBrowser summary">
+		<exec command="phpcb --log ${project.basedir}/build --source ${project.basedir} --output ${project.basedir}/build/code-browser" logoutput="true" />
+	</target>
+</project>
