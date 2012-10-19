@@ -5,7 +5,6 @@
  <!-- Include some sniffs from all around the place -->
  <rule ref="Generic.Functions.FunctionCallArgumentSpacing"/>
  <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie"/>
- <rule ref="Generic.PHP.DisallowShortOpenTag"/>
 
  <rule ref="Generic.Files.LineLength">
   <properties>
