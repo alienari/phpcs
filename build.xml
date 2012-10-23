@@ -1,5 +1,5 @@
 <project name="phpcs" default="build">
-	<target name="build" depends="prepare, lint, phpunit, phpcpd, phpmd, phpcb" description="Meta target, spouští ostatní targety"/>
+	<target name="build" depends="prepare, lint, phpunit, phpcpd, phpmd, phpcb, publishSniffs" description="Meta target, spouští ostatní targety"/>
 
 	<fileset id="allPhpFiles" dir="${project.basedir}/">
 		<include name="**/*.php"/>
@@ -41,5 +41,18 @@
 
 	<target name="phpcb" depends="phpcpd, phpmd" description="Generates PHP_CodeBrowser summary">
 		<exec command="phpcb --log ${project.basedir}/build --source ${project.basedir} --output ${project.basedir}/build/code-browser" logoutput="true" />
+	</target>
+
+	<target name="publishSniffs" depends="phpcpd" description="Publish sniffs to the PHP PEAR directory">
+		<delete failonerror="true">
+			<fileset dir="/usr/share/php/collabimphpcs/Collabim">
+				<include name="**/*.*"/>
+			</fileset>
+		</delete>
+		<copy todir="/usr/share/php/collabimphpcs/Collabim">
+			<fileset dir="${project.basedir}/Collabim">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
 	</target>
 </project>
