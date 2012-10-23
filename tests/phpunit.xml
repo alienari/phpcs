@@ -3,6 +3,6 @@
 	colors="true"
 	backupGlobals="false"
 	backupStaticAttributes="false"
-	strict="true"
+	strict="false"
 >
 </phpunit>
