@@ -3,6 +3,7 @@
 
 	<fileset id="allPhpFiles" dir="${project.basedir}/">
 		<include name="**/*.php"/>
+		<exclude name="**/data/*.php"/>
 	</fileset>
 
 	<target name="cleanup" description="Workspace cleanup">
