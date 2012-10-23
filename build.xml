@@ -5,10 +5,6 @@
 		<include name="**/*.php"/>
 	</fileset>
 
-	<fileset id="tests" dir="${project.basedir}/tests">
-		<include name="Collabim/**/*Test.php"/>
-	</fileset>
-
 	<target name="cleanup" description="Workspace cleanup">
 		<delete dir="${project.basedir}/build"/>
 	</target>
@@ -24,12 +20,9 @@
 	</target>
 
 	<target name="phpunit" depends="prepare" description="PHPUnit tests">
-		<phpunit printsummary="true" haltonfailure="true" haltonerror="true" bootstrap="${project.basedir}/tests/bootstrap.php">
-			<formatter todir="${project.basedir}/build" outfile="phpunit-report.xml" type="xml"/>
-			<batchtest>
-				<fileset refid="tests" />
-			</batchtest>
-		</phpunit>
+		<exec executable="phpunit" dir="${project.basedir}/tests" passthru="true" checkreturn="true">
+			<arg line="--configuration ${project.basedir}/tests/phpunit-jenkins.xml --log-junit ${project.basedir}/build/phpunit-report.xml" />
+		</exec>
 	</target>
 
 	<target name="phpcpd" depends="prepare" description="PHP copy paste detector">
