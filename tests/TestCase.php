@@ -4,6 +4,8 @@ require_once(__DIR__ . '/IncorrectSniffTestCaseNameException.php');
 
 class Collabim_TestCase extends PHPUnit_Framework_TestCase {
 
+	const PATH_TO_RULESET = '../Collabim/ruleset.xml';
+
 	protected function checkFile($file, $checkThisSniffOnly = TRUE) {
 		$result = $this->processFile($file, $checkThisSniffOnly);
 		return $result[$file];
@@ -21,7 +23,7 @@ class Collabim_TestCase extends PHPUnit_Framework_TestCase {
 		} else {
 			$sniffs = array();
 		}
-		$cs->process($file, 'Collabim', $sniffs);
+		$cs->process($file, self::PATH_TO_RULESET, $sniffs);
 
 		if ($checkThisSniffOnly) {
 			$listenersProperty = new ReflectionProperty('PHP_CodeSniffer', 'listeners');
