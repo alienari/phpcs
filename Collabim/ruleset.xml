@@ -20,4 +20,5 @@
 	</properties>
 </rule>
 
+<rule ref="Generic.PHP.LowerCaseConstant"/>
 </ruleset>
