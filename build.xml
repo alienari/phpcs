@@ -45,15 +45,24 @@
 	</target>
 
 	<target name="publishSniffs" depends="phpcpd" description="Publish sniffs to the PHP PEAR directory">
-		<delete failonerror="true">
-			<fileset dir="/usr/share/php/collabimphpcs/Collabim">
-				<include name="**/*.*"/>
-			</fileset>
-		</delete>
-		<copy todir="/usr/share/php/collabimphpcs/Collabim">
-			<fileset dir="${project.basedir}/Collabim">
-				<include name="**/*.*"/>
-			</fileset>
-		</copy>
+		<if>
+			<!-- publish updated sniffs from the main phing project only -->
+			<contains string="${project.basedir}" substring="/phpcs/"/>
+			<then>
+				<delete failonerror="true">
+					<fileset dir="/usr/share/php/collabimphpcs/Collabim">
+						<include name="**/*.*"/>
+					</fileset>
+				</delete>
+				<copy todir="/usr/share/php/collabimphpcs/Collabim">
+					<fileset dir="${project.basedir}/Collabim">
+						<include name="**/*.*"/>
+					</fileset>
+				</copy>
+			</then>
+			<else>
+				<echo message="Sniffs not published" />
+			</else>
+		</if>
 	</target>
 </project>
