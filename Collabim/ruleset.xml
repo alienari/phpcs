@@ -1,23 +1,23 @@
 <?xml version="1.0"?>
 <ruleset name="Collabim">
- <description>Collabim codding standards</description>
+<description>Collabim codding standards</description>
 
- <!-- Include some sniffs from all around the place -->
- <rule ref="Generic.Functions.FunctionCallArgumentSpacing"/>
- <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie"/>
+<!-- Include some sniffs from all around the place -->
+<rule ref="Generic.Functions.FunctionCallArgumentSpacing"/>
+<rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie"/>
 
- <rule ref="Generic.Files.LineLength">
-  <properties>
-   <property name="lineLimit" value="180"/>
-   <property name="absoluteLineLimit" value="220"/>
-  </properties>
+<rule ref="Generic.Files.LineLength">
+	<properties>
+		<property name="lineLimit" value="180"/>
+		<property name="absoluteLineLimit" value="220"/>
+	</properties>
  </rule>
 
- <!-- Use Unix newlines -->
- <rule ref="Generic.Files.LineEndings">
-  <properties>
-   <property name="eolChar" value="\n"/>
-  </properties>
- </rule>
+<!-- Use Unix newlines -->
+<rule ref="Generic.Files.LineEndings">
+	<properties>
+		<property name="eolChar" value="\n"/>
+	</properties>
+</rule>
 
 </ruleset>
