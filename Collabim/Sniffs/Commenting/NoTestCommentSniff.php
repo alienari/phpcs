@@ -3,10 +3,10 @@
 class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_Sniff {
 
 	private $config;
-
 	private $reasonChecked = false;
-
 	private $testClassExists;
+	private $classNamespace;
+	private $classNamespaceAlreadyDetected = false;
 
 	public function __construct() {
 		require_once __DIR__ . '/NoTestCommentSniff/NoTestCommentSniffConfig.php';
@@ -22,7 +22,10 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
     }
 
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
-		$testClassExists = $this->checkIfTestClassExists($phpcsFile->getFilename());
+		$namespace = $this->getNamespace($phpcsFile->getFilename());
+		$className = pathinfo($phpcsFile->getFilename(), PATHINFO_FILENAME);
+
+		$testClassExists = $this->checkIfTestClassExists($className, $namespace);
 
 		if ($testClassExists === true) {
 			return;
@@ -40,22 +43,16 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 		}
 	}
 
-	private function checkIfTestClassExists($filePath) {
+	private function checkIfTestClassExists($className, $namespace) {
 		if ($this->testClassExists === null) {
-			$this->testClassExists = $this->testClassExists($filePath);
+			$this->testClassExists = $this->testClassExists($className, $namespace);
 		}
 
 		return $this->testClassExists;
 	}
 
-	private function testClassExists($filePath) {
-		$filePath = str_replace('\\', '/', $filePath);
-
-		$className = pathinfo($filePath, PATHINFO_FILENAME);
-
+	private function testClassExists($className, $namespace) {
 		foreach ($this->config->getIncludePaths() as $supportedDir) {
-			$namespace = $this->getNamespace($filePath);
-
 			if ($namespace) {
 				$testPath = $supportedDir . '/' . $namespace . '/' . $className . 'Test.php';
 			}
@@ -72,6 +69,16 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 	}
 
 	private function getNamespace($filePath) {
+		if (!$this->classNamespaceAlreadyDetected) {
+			$this->classNamespace = $this->extractNamespace($filePath);
+
+			$this->classNamespaceAlreadyDetected = true;
+		}
+
+		return $this->classNamespace;
+	}
+
+	private function extractNamespace($filePath) {
 		// TODO: udělat přes tokeny
 		$data = file_get_contents($filePath);
 
