@@ -20,4 +20,10 @@
   </properties>
  </rule>
 
+<rule ref="Collabim.Commenting.NoTestComment">
+	<properties>
+		<property name="configFilePath" value="D:\Weby\phpcs\Collabim\Sniffs\Commenting\NoTestCommentSniff\config.php"/>
+	</properties>
+</rule>
+
 </ruleset>

@@ -48,8 +48,12 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniffTest extends Collabim_TestCas
 		$this->assertEmpty($result['errors']);
 	}
 
-	private function checkTestFile($path) {
-		return $this->checkFile(__DIR__ . '/NoTestCommentSniffTest' . $path);
+	private function checkTestFile($path, $checkThisSniffOnly = true) {
+		return $this->checkFile(
+			__DIR__ . '/NoTestCommentSniffTest' . $path,
+			$checkThisSniffOnly,
+			__DIR__ . '/NoTestCommentSniffTest/ruleset.xml'
+		);
 	}
 
 }

@@ -1,20 +1,28 @@
 <?php
 
+/**
+ * @property string configFilePath Path to sniff configuration object
+ */
 class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_Sniff {
 
 	private $config;
 	private $reasonChecked = false;
 	private $testClassExists;
+	private $classIsService;
 	private $classNamespace;
 	private $classNamespaceAlreadyDetected = false;
-
-	public function __construct() {
-		require_once __DIR__ . '/NoTestCommentSniff/NoTestCommentSniffConfig.php';
-
-		$this->config = new NoTestCommentSniffConfig();
-	}
+	private $containerPath;
 
     public function register() {
+		require_once __DIR__ . '/NoTestCommentSniff/NoTestCommentSniffConfig.php';
+
+		$configValues = require $this->configFilePath;
+
+		$this->config = new NoTestCommentSniffConfig(
+			$configValues['includePaths'],
+			$configValues['diContainerDirectoryPath']
+		);
+
 		return array(
 			T_CLASS,
 			T_DOC_COMMENT,
@@ -24,6 +32,15 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
 		$namespace = $this->getNamespace($phpcsFile->getFilename());
 		$className = pathinfo($phpcsFile->getFilename(), PATHINFO_FILENAME);
+		$classNameWithNamespace = $namespace ? ($namespace . '\\' . $className) : $className;
+
+		if ($this->config->checkDiContainer()) {
+			$isService = $this->checkIfIsService($classNameWithNamespace);
+
+			if ($isService === false) {
+				return;
+			}
+		}
 
 		$testClassExists = $this->checkIfTestClassExists($className, $namespace);
 
@@ -41,6 +58,49 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 		else if ($currentToken['type'] === 'T_DOC_COMMENT') {
 			$this->checkTestCommentWithReason($currentToken, $phpcsFile, $stackPtr);
 		}
+	}
+
+	private function checkIfIsService($classNameWithNamespace) {
+		if ($this->classIsService === null) {
+			$this->classIsService = $this->serviceFileExists($classNameWithNamespace);
+		}
+
+		return $this->classIsService;
+	}
+
+	private function serviceFileExists($classNameWithNamespace) {
+		$containerAsString = file_get_contents($this->getContainerPath());
+
+		$stringToSearchFor = '@return ' . $classNameWithNamespace;
+
+		return (mb_strpos($containerAsString, $stringToSearchFor) !== false);
+	}
+
+	private function getContainerPath() {
+		if (!$this->containerPath) {
+			$this->containerPath = $this->findContainerPath();
+		}
+
+		return $this->containerPath;
+	}
+
+	private function findContainerPath() {
+		$diContainerDirectory = $this->config->getDiContainerDirectoryPath();
+		$iterator = new DirectoryIterator($diContainerDirectory);
+
+		$lastContainerFileTimestamp = null;
+		$lastContainerFileName = null;
+
+		foreach ($iterator as $fileinfo) {
+			if ($fileinfo->isFile()) {
+				if ($fileinfo->getMTime() > $lastContainerFileTimestamp) {
+					$lastContainerFileName = $fileinfo->getFilename();
+					$lastContainerFileTimestamp = $fileinfo->getMTime();
+				}
+			}
+		}
+
+		return $diContainerDirectory . '/' . $lastContainerFileName;
 	}
 
 	private function checkIfTestClassExists($className, $namespace) {
