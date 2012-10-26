@@ -22,5 +22,4 @@
 
 <rule ref="Generic.PHP.LowerCaseConstant"/>
 <rule ref="Squiz.Strings.DoubleQuoteUsage"/>
-<rule ref="Squiz.ControlStructures.ControlSignature"/>
 </ruleset>
