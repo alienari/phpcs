@@ -32,12 +32,22 @@ class Collabim_Sniffs_Classes_ParentConstructorCallSniff
 	public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
 		$tokens = $phpcsFile->getTokens();
 
+		if (!$this->classHasParentClass($phpcsFile)) {
+			return;
+		}
+
 		if ($tokens[$stackPtr]['code'] === T_FUNCTION) {
 			$this->checkConstructor($phpcsFile, $stackPtr);
 		}
 	}
 
-	private function checkConstructor($phpcsFile, $stackPtr) {
+	private function classHasParentClass(PHP_CodeSniffer_File $phpcsFile) {
+		$extends = $phpcsFile->findNext(T_EXTENDS, 0);
+
+		return ($extends !== false);
+	}
+
+	private function checkConstructor(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
 		$tokens = $phpcsFile->getTokens();
 		$functionNamePtr = $phpcsFile->findNext(T_STRING, $stackPtr);
 		if ($tokens[$functionNamePtr]['content'] !== '__construct') {

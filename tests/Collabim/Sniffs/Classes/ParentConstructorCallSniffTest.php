@@ -16,6 +16,12 @@ class Collabim_Sniffs_Classes_ParentConstructorCallSniffTest extends Collabim_Te
 		$this->assertEquals(0, $result['numErrors']);
 	}
 
+	public function testParentConstructorCall_classWithoutParent() {
+		$result = $this->checkFile(__DIR__ . '/ParentConstructorCallSniffTest/class-without-parent.php');
+
+		$this->assertEquals(0, $result['numErrors']);
+	}
+
 	public function testParentConstructorCall_withoutParrentConstructorCall() {
 		$result = $this->checkFile(__DIR__ . '/ParentConstructorCallSniffTest/without-parent-constructor-call.php');
 
