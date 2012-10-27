@@ -1,18 +1,16 @@
 <?php
 
+class Collabim_Sniffs_WhiteSpace_NewlinesBetweenClassPartsSniffTest extends Collabim_TestCase {
 
-class Collabim_Sniffs_WhiteSpace_NewlinesBetweenClassPartsSniffTest extends Collabim_TestCase
-{
+	public function testEmptyClass() {
+		$result = $this->checkFile(__DIR__ . '/NewlinesBetweenClassPartsSniffTest/EmptyClass.php');
 
-	public function testHashBang()
-	{
-		$result = $this->checkFile(__DIR__ . '/NewlinesBetweenClassPartsSniffTest/hashbang.php');
 		$this->assertEquals(0, $result['numErrors']);
 	}
 
-	public function testClassWithConstantsOnlyAndWithEmptyLineMissing()
-	{
+	public function testClassWithConstantsOnlyAndWithEmptyLineMissing() {
 		$result = $this->checkFile(__DIR__ . '/NewlinesBetweenClassPartsSniffTest/ClassWithConstantsOnlyAndWithEmptyLineMissing.php');
+
 		$this->assertEquals(1, $result['numErrors']);
 
 		$this->assertEquals(
@@ -21,17 +19,16 @@ class Collabim_Sniffs_WhiteSpace_NewlinesBetweenClassPartsSniffTest extends Coll
 		);
 	}
 
-	public function testClassWithConstantsOnlySpecialCaseWithMultipleDeclaration()
-	{
-		// this is invalid syntax according to our coding standards
-		// but this sniff should report 0 errors
-
+	/**
+	 * This is invalid syntax according to our coding standards, but this sniff should report 0 errors
+	 */
+	public function testClassWithConstantsOnlySpecialCaseWithMultipleDeclaration() {
 		$result = $this->checkFile(__DIR__ . '/NewlinesBetweenClassPartsSniffTest/ClassWithConstantsOnlySpecialCaseWithMultipleDeclaration.php');
+
 		$this->assertEquals(0, $result['numErrors']);
 	}
 
-	public function testConstantsBeforeClassMembers()
-	{
+	public function testConstantsBeforeClassMembers() {
 		$result = $this->checkFile(__DIR__ . '/NewlinesBetweenClassPartsSniffTest/ConstantsBeforeClassMembers.php');
 		$this->assertEquals(1, $result['numErrors']);
 
