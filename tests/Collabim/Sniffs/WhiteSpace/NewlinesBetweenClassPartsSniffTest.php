@@ -8,6 +8,12 @@ class Collabim_Sniffs_WhiteSpace_NewlinesBetweenClassPartsSniffTest extends Coll
 		$this->assertEquals(0, $result['numErrors']);
 	}
 
+	public function testClassWithContantsAndMembers() {
+		$result = $this->checkFile(__DIR__ . '/NewlinesBetweenClassPartsSniffTest/ClassWithContantsAndMembers.php');
+
+		$this->assertEquals(0, $result['numErrors']);
+	}
+
 	public function testClassWithConstantsOnlyAndWithEmptyLineMissing() {
 		$result = $this->checkFile(__DIR__ . '/NewlinesBetweenClassPartsSniffTest/ClassWithConstantsOnlyAndWithEmptyLineMissing.php');
 
