@@ -11,11 +11,16 @@ class Collabim_Sniffs_WhiteSpace_NewlinesBetweenClassPartsSniffTest extends Coll
 	public function testClassWithConstantsOnlyAndWithEmptyLineMissing() {
 		$result = $this->checkFile(__DIR__ . '/NewlinesBetweenClassPartsSniffTest/ClassWithConstantsOnlyAndWithEmptyLineMissing.php');
 
-		$this->assertEquals(1, $result['numErrors']);
+		$this->assertEquals(2, $result['numErrors']);
+
+		$this->assertEquals(
+			'There must be NO empty lines between constant declarations.',
+			$result['errors'][7][1][0]['message']
+		);
 
 		$this->assertEquals(
 			'Line after last constant must be empty.',
-			$result['errors'][8][2][0]['message']
+			$result['errors'][9][2][0]['message']
 		);
 	}
 
@@ -34,7 +39,7 @@ class Collabim_Sniffs_WhiteSpace_NewlinesBetweenClassPartsSniffTest extends Coll
 
 		$this->assertEquals(
 			'All constants must be before class members.',
-			$result['errors'][10][2][0]['message']
+			$result['errors'][7][2][0]['message']
 		);
 	}
 

@@ -106,7 +106,16 @@ class Collabim_Sniffs_WhiteSpace_NewlinesBetweenClassPartsSniff
 			if ($var === FALSE) {
 				break;
 			}
-			if ($phpcsFile->findNext(array(T_CONST), $var + 1) === FALSE && !$this->isNextLineEmpty($phpcsFile, $var)) {
+
+			$nextConst = $phpcsFile->findNext(array(T_CONST), $var + 1);
+
+			if ($nextConst && $this->isNextLineEmpty($phpcsFile, $var)) {
+				$semicolon = $phpcsFile->findNext(array(T_SEMICOLON), $var);
+
+				$phpcsFile->addError('There must be NO empty lines between constant declarations.', $semicolon + 2);
+			}
+
+			if ($nextConst === FALSE && !$this->isNextLineEmpty($phpcsFile, $var)) {
 
 				// multiple declaration by-pass
 				$nextEquals = $phpcsFile->findNext(T_EQUAL, $phpcsFile->findNext(T_EQUAL, $var) + 1);
