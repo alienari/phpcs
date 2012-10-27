@@ -21,5 +21,4 @@ class Test {
 	private function somePrivateFunction() {
 
 	}
-
 }
