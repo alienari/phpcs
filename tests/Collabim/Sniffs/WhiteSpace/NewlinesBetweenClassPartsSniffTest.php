@@ -38,4 +38,24 @@ class Collabim_Sniffs_WhiteSpace_NewlinesBetweenClassPartsSniffTest extends Coll
 		);
 	}
 
+	public function testClassMembers() {
+		$result = $this->checkFile(__DIR__ . '/NewlinesBetweenClassPartsSniffTest/ClassMembers.php');
+		$this->assertEquals(3, $result['numErrors']);
+
+		$this->assertEquals(
+			'There should be no empty lines between member variables.',
+			$result['errors'][7][1][0]['message']
+		);
+
+		$this->assertEquals(
+			'There should be no empty lines between member variables.',
+			$result['errors'][9][1][0]['message']
+		);
+
+		$this->assertEquals(
+			'There should be no empty lines between member variables.',
+			$result['errors'][13][1][0]['message']
+		);
+	}
+
 }
