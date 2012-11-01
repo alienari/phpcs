@@ -147,18 +147,6 @@ class Collabim_Sniffs_WhiteSpace_NewlinesBetweenClassPartsSniff
 					continue;
 				}
 
-				$varStart = $this->getDocBlockOrDeclarationLine($phpcsFile, $var);
-				$semicolon = $phpcsFile->findNext(array(T_SEMICOLON), $varStart);
-				$nextPrivate = $phpcsFile->findNext(T_PRIVATE, $semicolon);
-				$nextPrivateType = $tokens[$nextPrivate + 2]['type'];
-
-				if ($semicolon && $nextPrivate && $nextPrivateType === 'T_VARIABLE' && $this->isNextLineEmpty($phpcsFile, $semicolon)) {
-					$phpcsFile->addError(
-						'There should be no empty lines between member variables.',
-						$semicolon + 2
-					);
-				}
-
 				$const = $phpcsFile->findNext(array(T_CONST), $var);
 				if ($const !== FALSE) {
 					$phpcsFile->addError(
