@@ -226,12 +226,6 @@ class Collabim_Sniffs_WhiteSpace_NewlinesBetweenClassPartsSniff
 						);
 					}
 				}
-				if ($tokens[$tokens[$function]['scope_opener']]['line'] === $tokens[$tokens[$function]['scope_closer']]['line'] - 1) {
-					$phpcsFile->addError(
-						'Empty function must have one empty line.',
-						$tokens[$function]['scope_opener']
-					);
-				}
 				if (!$this->isNextLineEmpty($phpcsFile, $tokens[$function]['scope_closer'])) {
 					$phpcsFile->addError(
 						'Line after function close parenthesis must be empty.',
