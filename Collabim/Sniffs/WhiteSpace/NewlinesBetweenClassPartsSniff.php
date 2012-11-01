@@ -226,7 +226,9 @@ class Collabim_Sniffs_WhiteSpace_NewlinesBetweenClassPartsSniff
 						);
 					}
 				}
-				if (!$this->isNextLineEmpty($phpcsFile, $tokens[$function]['scope_closer'])) {
+				$nextFunctionStactPtr = $phpcsFile->findNext(T_FUNCTION, $function + 1);
+
+				if ($nextFunctionStactPtr && !$this->isNextLineEmpty($phpcsFile, $tokens[$function]['scope_closer'])) {
 					$phpcsFile->addError(
 						'Line after function close parenthesis must be empty.',
 						$this->getLastPtrOnNextLine($phpcsFile, $tokens[$function]['scope_closer'])

@@ -51,7 +51,7 @@ class Collabim_Sniffs_WhiteSpace_NewlinesBetweenClassPartsSniffTest extends Coll
 
 	public function testClassMembers() {
 		$result = $this->checkFile(__DIR__ . '/NewlinesBetweenClassPartsSniffTest/ClassMembers.php');
-		$this->assertEquals(4, $result['numErrors']);
+		$this->assertEquals(3, $result['numErrors']);
 
 		$this->assertEquals(
 			'There should be no empty lines between member variables.',
@@ -67,10 +67,15 @@ class Collabim_Sniffs_WhiteSpace_NewlinesBetweenClassPartsSniffTest extends Coll
 			'There should be no empty lines between member variables.',
 			$result['errors'][13][1][0]['message']
 		);
+	}
+
+	public function testWhitespacesBetweenMethods() {
+		$result = $this->checkFile(__DIR__ . '/NewlinesBetweenClassPartsSniffTest/WhitespacesBetweenMethods.php');
+		$this->assertEquals(1, $result['numErrors']);
 
 		$this->assertEquals(
 			'Line after function close parenthesis must be empty.',
-			$result['errors'][24][2][0]['message']
+			$result['errors'][12][47][0]['message']
 		);
 	}
 
