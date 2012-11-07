@@ -68,18 +68,12 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 
 			$classCommentPartContent = $tokens[$classCommentPartStackPtr]['content'];
 
-			$noTestPosition = mb_strpos($classCommentPartContent, '@noTest');
-
-			if ($noTestPosition !== false) {
-				$reason = trim(mb_substr($classCommentPartContent, $noTestPosition + 8));
-
-				if (!$reason) {
+			if (mb_strpos($classCommentPartContent, '@noTest') !== false) {
+				if (!$this->reasonDefined($classCommentPartContent)) {
 					$phpcsFile->addError('Reason does not exist for @noTest class annotation', $classCommentPartStackPtr);
-
-					return;
 				}
 
-				break;
+				return;
 			}
 		}
 		while (true);
@@ -87,6 +81,10 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 
 	private function noAnnotationExists(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
 		$phpcsFile->addError('Neither test class nor @noTest class annotation exist', $stackPtr);
+	}
+
+	private function reasonDefined($classCommentPartContent) {
+		return (bool) preg_match('~@noTest[\s]+[^\s]+~i', $classCommentPartContent);
 	}
 
 	private function checkIfIsService($classNameWithNamespace) {
