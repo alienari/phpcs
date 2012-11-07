@@ -5,12 +5,10 @@
  */
 class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_Sniff {
 
+	/**
+	 * @var NoTestCommentSniffConfig
+	 */
 	private $config;
-	private $testClassExists;
-	private $classIsService;
-	private $classNamespace;
-	private $classNamespaceAlreadyDetected = false;
-	private $containerPath;
 
     public function register() {
 		require_once __DIR__ . '/NoTestCommentSniff/NoTestCommentSniffConfig.php';
@@ -91,14 +89,6 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 	}
 
 	private function checkIfIsService($classNameWithNamespace) {
-		if ($this->classIsService === null) {
-			$this->classIsService = $this->serviceFileExists($classNameWithNamespace);
-		}
-
-		return $this->classIsService;
-	}
-
-	private function serviceFileExists($classNameWithNamespace) {
 		$containerAsString = file_get_contents($this->getContainerPath());
 
 		$stringToSearchFor = '@return ' . $classNameWithNamespace;
@@ -107,14 +97,6 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 	}
 
 	private function getContainerPath() {
-		if (!$this->containerPath) {
-			$this->containerPath = $this->findContainerPath();
-		}
-
-		return $this->containerPath;
-	}
-
-	private function findContainerPath() {
 		$diContainerDirectory = $this->config->getDiContainerDirectoryPath();
 		$iterator = new DirectoryIterator($diContainerDirectory);
 
@@ -134,14 +116,6 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 	}
 
 	private function checkIfTestClassExists($className, $namespace) {
-		if ($this->testClassExists === null) {
-			$this->testClassExists = $this->testClassExists($className, $namespace);
-		}
-
-		return $this->testClassExists;
-	}
-
-	private function testClassExists($className, $namespace) {
 		foreach ($this->config->getIncludePaths() as $supportedDir) {
 			if ($namespace) {
 				$testPath = $supportedDir . '/' . $namespace . '/' . $className . 'Test.php';
@@ -159,16 +133,6 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 	}
 
 	private function getNamespace($filePath) {
-		if (!$this->classNamespaceAlreadyDetected) {
-			$this->classNamespace = $this->extractNamespace($filePath);
-
-			$this->classNamespaceAlreadyDetected = true;
-		}
-
-		return $this->classNamespace;
-	}
-
-	private function extractNamespace($filePath) {
 		// TODO: udělat přes tokeny
 		$data = file_get_contents($filePath);
 
