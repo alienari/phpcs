@@ -26,8 +26,6 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
     }
 
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
-		$tokens = $phpcsFile->getTokens();
-
 		$namespace = $this->getNamespace($phpcsFile->getFilename());
 		$className = pathinfo($phpcsFile->getFilename(), PATHINFO_FILENAME);
 		$classNameWithNamespace = $namespace ? ($namespace . '\\' . $className) : $className;
@@ -49,39 +47,42 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 		$classCommentEndStackPtr = $phpcsFile->findPrevious(T_DOC_COMMENT, $stackPtr);
 
 		if ($classCommentEndStackPtr) {
-			$classCommentPartStackPtr = $classCommentEndStackPtr;
-
-			do {
-				$classCommentPartStackPtr = $phpcsFile->findPrevious(T_DOC_COMMENT, $classCommentPartStackPtr - 1);
-
-				if ($classCommentPartStackPtr === false) {
-					$this->noAnnotationExists($phpcsFile, $stackPtr);
-
-					break;
-				}
-
-				$classCommentPartContent = $tokens[$classCommentPartStackPtr]['content'];
-
-				$noTestPosition = mb_strpos($classCommentPartContent, '@noTest');
-
-				if ($noTestPosition !== false) {
-					$reason = trim(mb_substr($classCommentPartContent, $noTestPosition + 8));
-
-					if (!$reason) {
-						$phpcsFile->addError('Reason does not exist for @noTest class annotation', $classCommentPartStackPtr);
-
-						return;
-					}
-
-					break;
-				}
-			}
-			while (true);
-
+			$this->checkClassComments($phpcsFile, $classCommentEndStackPtr, $stackPtr);
 		}
 		else {
 			$this->noAnnotationExists($phpcsFile, $stackPtr);
 		}
+	}
+
+	private function checkClassComments(PHP_CodeSniffer_File $phpcsFile, $classCommentPartStackPtr, $stackPtr) {
+		$tokens = $phpcsFile->getTokens();
+
+		do {
+			$classCommentPartStackPtr = $phpcsFile->findPrevious(T_DOC_COMMENT, $classCommentPartStackPtr - 1);
+
+			if ($classCommentPartStackPtr === false) {
+				$this->noAnnotationExists($phpcsFile, $stackPtr);
+
+				break;
+			}
+
+			$classCommentPartContent = $tokens[$classCommentPartStackPtr]['content'];
+
+			$noTestPosition = mb_strpos($classCommentPartContent, '@noTest');
+
+			if ($noTestPosition !== false) {
+				$reason = trim(mb_substr($classCommentPartContent, $noTestPosition + 8));
+
+				if (!$reason) {
+					$phpcsFile->addError('Reason does not exist for @noTest class annotation', $classCommentPartStackPtr);
+
+					return;
+				}
+
+				break;
+			}
+		}
+		while (true);
 	}
 
 	private function noAnnotationExists(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
