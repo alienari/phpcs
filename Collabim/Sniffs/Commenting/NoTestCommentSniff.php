@@ -6,7 +6,6 @@
 class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_Sniff {
 
 	private $config;
-	private $reasonChecked = false;
 	private $testClassExists;
 	private $classIsService;
 	private $classNamespace;
@@ -24,12 +23,13 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 		);
 
 		return array(
-			T_CLASS,
-			T_DOC_COMMENT,
+			T_CLASS
 		);
     }
 
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
+		$tokens = $phpcsFile->getTokens();
+
 		$namespace = $this->getNamespace($phpcsFile->getFilename());
 		$className = pathinfo($phpcsFile->getFilename(), PATHINFO_FILENAME);
 		$classNameWithNamespace = $namespace ? ($namespace . '\\' . $className) : $className;
@@ -48,16 +48,46 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 			return;
 		}
 
-		$tokens = $phpcsFile->getTokens();
+		$classCommentEndStackPtr = $phpcsFile->findPrevious(T_DOC_COMMENT, $stackPtr);
 
-		$currentToken = $tokens[$stackPtr];
+		if ($classCommentEndStackPtr) {
+			$classCommentPartStackPtr = $classCommentEndStackPtr;
 
-		if ($currentToken['type'] === 'T_CLASS' && !$this->reasonChecked) {
-			$phpcsFile->addError('Neither test class nor @noTest class annotation exist', $stackPtr);
+			do {
+				$classCommentPartStackPtr = $phpcsFile->findPrevious(T_DOC_COMMENT, $classCommentPartStackPtr - 1);
+
+				if ($classCommentPartStackPtr === false) {
+					$this->noAnnotationExists($phpcsFile, $stackPtr);
+
+					break;
+				}
+
+				$classCommentPartContent = $tokens[$classCommentPartStackPtr]['content'];
+
+				$noTestPosition = mb_strpos($classCommentPartContent, '@noTest');
+
+				if ($noTestPosition !== false) {
+					$reason = trim(mb_substr($classCommentPartContent, $noTestPosition + 8));
+
+					if (!$reason) {
+						$phpcsFile->addError('Reason does not exist for @noTest class annotation', $classCommentPartStackPtr);
+
+						return;
+					}
+
+					break;
+				}
+			}
+			while (true);
+
 		}
-		else if ($currentToken['type'] === 'T_DOC_COMMENT') {
-			$this->checkTestCommentWithReason($currentToken, $phpcsFile, $stackPtr);
+		else {
+			$this->noAnnotationExists($phpcsFile, $stackPtr);
 		}
+	}
+
+	private function noAnnotationExists(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
+		$phpcsFile->addError('Neither test class nor @noTest class annotation exist', $stackPtr);
 	}
 
 	private function checkIfIsService($classNameWithNamespace) {
@@ -147,24 +177,6 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 		}
 		else {
 			return null;
-		}
-	}
-
-	private function checkTestCommentWithReason($currentToken, PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
-		if (strpos($currentToken['content'], '@noTest') === false) {
-			return;
-		}
-
-		$reasonStartPosition = mb_strpos($currentToken['content'], '@noTest');
-
-		$reason = trim(mb_substr($currentToken['content'], $reasonStartPosition + 8));
-
-		$this->reasonChecked = true;
-
-		if (!$reason) {
-			$phpcsFile->addError('Reason does not exist for @noTest class annotation', $stackPtr);
-
-			return;
 		}
 	}
 
