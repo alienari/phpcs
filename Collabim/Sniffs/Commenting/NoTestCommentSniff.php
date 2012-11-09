@@ -1,25 +1,12 @@
 <?php
 
 /**
- * @property string configFilePath Path to sniff configuration object
+ * @property string $testPaths
+ * @property string $diContainerDirectoryPath
  */
 class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_Sniff {
 
-	/**
-	 * @var NoTestCommentSniffConfig
-	 */
-	private $config;
-
     public function register() {
-		require_once __DIR__ . '/NoTestCommentSniff/NoTestCommentSniffConfig.php';
-
-		$configValues = require $this->configFilePath;
-
-		$this->config = new NoTestCommentSniffConfig(
-			$configValues['includePaths'],
-			$configValues['diContainerDirectoryPath']
-		);
-
 		return array(
 			T_CLASS
 		);
@@ -30,7 +17,7 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 		$className = pathinfo($phpcsFile->getFilename(), PATHINFO_FILENAME);
 		$classNameWithNamespace = $namespace ? ($namespace . '\\' . $className) : $className;
 
-		if ($this->config->checkDiContainer()) {
+		if ($this->diContainerDirectoryPath) {
 			$isService = $this->checkIfIsService($classNameWithNamespace);
 
 			if ($isService === false) {
@@ -96,8 +83,7 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 	}
 
 	private function getContainerPath() {
-		$diContainerDirectory = $this->config->getDiContainerDirectoryPath();
-		$iterator = new DirectoryIterator($diContainerDirectory);
+		$iterator = new DirectoryIterator($this->diContainerDirectoryPath);
 
 		$lastContainerFileTimestamp = null;
 		$lastContainerFileName = null;
@@ -111,11 +97,11 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 			}
 		}
 
-		return $diContainerDirectory . '/' . $lastContainerFileName;
+		return $this->diContainerDirectoryPath . '/' . $lastContainerFileName;
 	}
 
 	private function checkIfTestClassExists($className, $namespace) {
-		foreach ($this->config->getIncludePaths() as $supportedDir) {
+		foreach ($this->getTestPaths() as $supportedDir) {
 			if ($namespace) {
 				$testPath = $supportedDir . '/' . $namespace . '/' . $className . 'Test.php';
 			}
@@ -129,6 +115,15 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 		}
 
 		return false;
+	}
+
+	private function getTestPaths() {
+		if (substr($this->testPaths, -1, 1) === ';') {
+			return explode(';', substr($this->testPaths, 0, -1));
+		}
+		else {
+			return explode(';', $this->testPaths);
+		}
 	}
 
 	private function getNamespace($filePath) {

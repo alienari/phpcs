@@ -22,7 +22,10 @@
 
 	<rule ref="Collabim.Commenting.NoTestComment">
 		<properties>
-			<property name="configFilePath" value="D:\Weby\phpcs\Collabim\Sniffs\Commenting\NoTestCommentSniff\config.php"/>
+			<!-- example value: "/vol/www/collabim-app/src/tests/phpunit/src/library;/vol/www/collabim-app/src/tests/phpunit/src/application;" -->
+			<property name="testPaths" value=""/>
+			<!-- example value: "/vol/www/collabim-app/src/application/tmp/cache/_Nette.Configurator" -->
+			<property name="diContainerDirectoryPath" value=""/>
 		</properties>
 	</rule>
 
