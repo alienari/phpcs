@@ -151,7 +151,7 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 	private function checkIfTestClassExists($className, $namespace) {
 		foreach ($this->getTestPaths() as $supportedDir) {
 			if ($namespace) {
-				$testPath = $supportedDir . '/' . $namespace . '/' . $className . 'Test.php';
+				$testPath = $supportedDir . '/' . str_replace('\\', '/', $namespace) . '/' . $className . 'Test.php';
 			}
 			else {
 				$testPath = $supportedDir . '/' . $className . 'Test.php';
