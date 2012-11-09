@@ -13,7 +13,7 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
     }
 
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
-		$namespace = $this->getNamespace($phpcsFile->getFilename());
+		$namespace = $this->getNamespace($phpcsFile, $stackPtr);
 		$className = pathinfo($phpcsFile->getFilename(), PATHINFO_FILENAME);
 
 		if ($this->shouldBeSkiped($className, $namespace)) {
@@ -43,6 +43,36 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 		}
 		else {
 			$this->noAnnotationExists($phpcsFile, $stackPtr);
+		}
+	}
+
+	private function getNamespace(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
+		$namespaceStackPtr = $phpcsFile->findPrevious(T_NAMESPACE, $stackPtr);
+
+		if ($namespaceStackPtr) {
+			$tokens = $phpcsFile->getTokens();
+			$namespaceStartStackPtr = $phpcsFile->findNext(T_STRING, $namespaceStackPtr);
+			$namespaceName = '';
+
+			$i = $namespaceStartStackPtr;
+
+			do {
+				$token = $tokens[$i];
+
+				if ($token['type'] === 'T_SEMICOLON') {
+					break;
+				}
+
+				$namespaceName .= $token['content'];
+
+				$i++;
+			}
+			while (true);
+
+			return $namespaceName;
+		}
+		else {
+			return null;
 		}
 	}
 
@@ -144,17 +174,5 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 		}
 	}
 
-	private function getNamespace($filePath) {
-		// TODO: udělat přes tokeny
-		$data = file_get_contents($filePath);
-
-		if (preg_match('~namespace ([^;]+)~', $data, $matches)) {
-			return $matches[1];
-		}
-		else {
-			return null;
-		}
-	}
-
-}//end class
+}
 
