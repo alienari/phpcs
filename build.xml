@@ -55,7 +55,7 @@
 						<include name="**/*.*"/>
 					</fileset>
 				</delete>
-				<copy todir="/usr/share/php/collabimphpcs/Collabim">
+				<copy todir="/usr/share/php/collabimphpcs/Collabim" overwrite="true">
 					<fileset dir="${project.basedir}/Collabim">
 						<include name="**/*.*"/>
 					</fileset>
