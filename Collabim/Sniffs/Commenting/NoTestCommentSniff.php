@@ -15,6 +15,11 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
 		$namespace = $this->getNamespace($phpcsFile->getFilename());
 		$className = pathinfo($phpcsFile->getFilename(), PATHINFO_FILENAME);
+
+		if ($this->shouldBeSkiped($className, $namespace)) {
+			return;
+		}
+
 		$classNameWithNamespace = $namespace ? ($namespace . '\\' . $className) : $className;
 
 		if ($this->diContainerDirectoryPath) {
@@ -39,6 +44,15 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 		else {
 			$this->noAnnotationExists($phpcsFile, $stackPtr);
 		}
+	}
+
+	private function shouldBeSkiped($className, $namespace) {
+		// Mappers should have long tests, not src tests
+		if (substr($className, -6) === 'Mapper') {
+			return true;
+		}
+
+		return false;
 	}
 
 	private function checkClassComments(PHP_CodeSniffer_File $phpcsFile, $classCommentPartStackPtr, $stackPtr) {

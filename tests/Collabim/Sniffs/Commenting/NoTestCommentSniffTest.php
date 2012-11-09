@@ -32,6 +32,12 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniffTest extends Collabim_TestCas
 		$this->assertEmpty($result['errors']);
 	}
 
+	public function testRule_noTestIgnoredClassType() {
+		$result = $this->checkTestFile('/NoTestIgnoredClassType/FooMapper.php');
+
+		$this->assertEmpty($result['errors']);
+	}
+
 	public function testRule_testExistsAnnotationWithoutReason() {
 		$this->markTestIncomplete('Tady by to mělo hlásit, že test existuje a proto není nutná anotace');
 
