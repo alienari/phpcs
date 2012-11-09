@@ -51,6 +51,10 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 		if (substr($className, -6) === 'Mapper') {
 			return true;
 		}
+		// No need to test mapper configuration objects
+		else if ($namespace === 'Model\Configuration') {
+			return true;
+		}
 
 		return false;
 	}
