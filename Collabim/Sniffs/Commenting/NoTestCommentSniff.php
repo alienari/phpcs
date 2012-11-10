@@ -166,6 +166,8 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniff implements PHP_CodeSniffer_S
 	}
 
 	private function getTestPaths() {
+		$this->testPaths = str_replace('{rootDirectory}', realpath('../../'), $this->testPaths);
+
 		if (substr($this->testPaths, -1, 1) === ';') {
 			return explode(';', substr($this->testPaths, 0, -1));
 		}

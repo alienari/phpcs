@@ -55,19 +55,7 @@ class Collabim_Sniffs_Commenting_NoTestCommentSniffTest extends Collabim_TestCas
 	}
 
 	private function checkTestFile($path, $checkThisSniffOnly = true) {
-		$rulesetPath = __DIR__ . '/NoTestCommentSniffTest/ruleset.xml';
-
-		$this->setRulesProperties($rulesetPath);
-
-		return $this->checkFile(__DIR__ . '/NoTestCommentSniffTest' . $path, $checkThisSniffOnly, $rulesetPath);
-	}
-
-	private function setRulesProperties($rulesetPath) {
-		$snifConfig = file_get_contents(__DIR__ . '/NoTestCommentSniffTest/ruleset.xml.template');
-
-		$snifConfig = str_replace('{testPaths}', __DIR__ . '/NoTestCommentSniffTest', $snifConfig);
-
-		file_put_contents($rulesetPath, $snifConfig);
+		return $this->checkFile(__DIR__ . '/NoTestCommentSniffTest' . $path, $checkThisSniffOnly);
 	}
 
 }

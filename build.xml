@@ -5,6 +5,7 @@
 		<include name="**/*.php"/>
 		<exclude name="**/data/*.php"/>
 		<exclude name="**/*Test/*.php"/>
+		<exclude name="PHP_CodeSniffer/**/*.*"/>
 	</fileset>
 
 	<target name="cleanup" description="Workspace cleanup">
@@ -22,6 +23,7 @@
 	</target>
 
 	<target name="phpunit" depends="prepare" description="PHPUnit tests">
+		<exec command="ln -s ${project.basedir}/Collabim/ PHP_CodeSniffer/CodeSniffer/Standards" dir="${project.basedir}" passthru="true"/>
 		<exec executable="phpunit" dir="${project.basedir}/tests" passthru="true" checkreturn="true">
 			<arg line="--configuration ${project.basedir}/tests/phpunit-jenkins.xml --log-junit ${project.basedir}/build/phpunit-report.xml" />
 		</exec>

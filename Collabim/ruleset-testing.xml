@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <ruleset name="Collabim">
 
+<rule ref="Collabim"/>
+
 <rule ref="Collabim.Commenting.NoTestComment">
 	<properties>
-		<property name="testPaths" value="D:\Weby\phpcs\tests\Collabim\Sniffs\Commenting/NoTestCommentSniffTest"/>
+		<property name="testPaths" value="{rootDirectory}/tests/Collabim/Sniffs/Commenting/NoTestCommentSniffTest"/>
 		<property name="diContainerDirectoryPath" value=""/>
 	</properties>
 </rule>

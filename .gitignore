@@ -1,4 +1,4 @@
 nbproject/
 .idea
 Collabim/ruleset.xml
-Collabim/Sniffs/Commenting/NoTestCommentSniffTest/ruleset.xml
+PHP_CodeSniffer/CodeSniffer/Standards/Collabim
