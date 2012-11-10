@@ -3,7 +3,7 @@
 
 <rule ref="Collabim.Commenting.NoTestComment">
 	<properties>
-		<property name="testPaths" value="D:\Weby\phpcs\tests\Collabim\Sniffs\Commenting/NoTestCommentSniffTest"/>
+		<property name="testPaths" value="{testPaths}"/>
 		<property name="diContainerDirectoryPath" value=""/>
 	</properties>
 </rule>
